@@ -1,0 +1,45 @@
+1 2 GfsSimulation GfsBox GfsGEdge {} {
+  Time { end = 10000 }
+  Refine 8
+
+	GfsSolid shape_8171.gts
+
+  AdaptVorticity {istep =1 } { maxlevel = 6 cmax = 1e-2 }
+
+  SourceDiffusion {} U 1e-6
+  SourceDiffusion {} V 1e-6
+
+  EventStop {istep = 10} U 1e-4 DU
+  OutputScalarNorm {istep = 10} du {v = DU}
+
+
+
+	OutputPPM {start = end} { convert -colors 256 ppm:- velocity_8171.png} {
+    v=Velocity
+  }
+	OutputPPM {start = end} { convert -colors 256 ppm:- velocity_8171.png} {
+    v=Vorticity
+  }
+
+  OutputSimulation { start = end } end.gfs
+
+  GfsInit {} {
+     U = 0
+  }
+
+  GfsOutputTime            {istep = 1} stderr
+
+	GfsOutputSimulation {start = start} input_8171-%3.1f.gfs {
+        variables = U,V,P
+        format = text
+    }
+	GfsOutputSimulation {start = end} output_8171-%3.1f.gfs {
+    variables = U,V,P
+    format = text
+  }
+
+Source {} U 5e-10}
+GfsBox {
+  }
+1 1 right
+1 1 top
